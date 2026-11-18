@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import { assignableRoles } from "@/lib/rbac";
 import type { Invitation, RoleKey } from "@/lib/types";

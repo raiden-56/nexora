@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import type { Capability, Device, DeviceCommand, DeviceState, DeviceType, IntegrationAccount } from "@/lib/types";
 import type { CommandResult, DeviceProvider, DiscoveredDevice } from "./types";
 

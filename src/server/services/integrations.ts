@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import { DEVICE_CATALOG } from "@/lib/devices";
 import type { Device, IntegrationAccount, ProviderKey, PublicIntegration } from "@/lib/types";

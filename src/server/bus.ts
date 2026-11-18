@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import type { Device, DeviceState } from "@/lib/types";
 
 export type BusEvent = { type: "device.changed"; device: Device; previous: DeviceState; source: string };

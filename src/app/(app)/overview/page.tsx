@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
@@ -149,7 +150,7 @@ export default function OverviewPage() {
           <CardHeader title="Automation overview" subtitle="Executed by the Nexora scheduler — no browser needed" action={<Link href="/automations"><Button size="sm" variant="ghost">All <ArrowRight className="size-3.5" /></Button></Link>} />
           <div className="space-y-5 p-5">
             {failures.map((f) => (
-              <Link key={f.id} href={f.automationId ? `/automations/${f.automationId}` : "/scenes"} className="flex items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--warn)_30%,transparent)] bg-[color-mix(in_srgb,var(--warn)_8%,transparent)] p-3">
+              <Link key={f.id} href={f.automationId ? appHref(`/automations/${f.automationId}`) : "/scenes"} className="flex items-start gap-3 rounded-xl border border-[color-mix(in_srgb,var(--warn)_30%,transparent)] bg-[color-mix(in_srgb,var(--warn)_8%,transparent)] p-3">
                 <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warn" />
                 <div className="min-w-0 text-[12.5px]">
                   <div className="font-semibold text-text">
@@ -165,7 +166,7 @@ export default function OverviewPage() {
               <ul className="space-y-2">
                 {upcoming.map((u, i) => (
                   <li key={i}>
-                    <Link href={`/automations/${u.id}`} className="flex items-center justify-between gap-3 rounded-xl px-1 py-1 text-[13px] hover:bg-surface-2">
+                    <Link href={appHref(`/automations/${u.id}`)} className="flex items-center justify-between gap-3 rounded-xl px-1 py-1 text-[13px] hover:bg-surface-2">
                       <span className="min-w-0 truncate">
                         <span className="font-medium">{u.name}</span>
                         {u.phase === "end" && <span className="text-faint"> · end</span>}
@@ -226,7 +227,7 @@ export default function OverviewPage() {
             const dev = data.devices.find((d) => d.id === a.deviceId);
             return (
               <li key={a.id}>
-                <Link href={dev ? `/devices/${dev.id}` : "/activity"} className="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-surface-2">
+                <Link href={dev ? appHref(`/devices/${dev.id}`) : "/activity"} className="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-surface-2">
                   {dev ? <DeviceGlyph device={dev} size="sm" /> : <span className="size-8 rounded-xl bg-surface-3" />}
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[13.5px]">

@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -289,7 +290,7 @@ export default function PairPage() {
                     </Button>
                   ) : (
                     <>
-                      <Button variant="primary" onClick={() => router.push(`/devices/${result?.device.id}`)}>
+                      <Button variant="primary" onClick={() => router.push(appHref(`/devices/${result?.device.id}`))}>
                         Open device
                       </Button>
                       <Button variant="outline" onClick={() => (setStep(1), setPick(null), setPhase("idle"), setResult(null), void (integration && discover(integration)))}>

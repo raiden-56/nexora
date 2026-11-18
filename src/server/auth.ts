@@ -1,5 +1,5 @@
-import "server-only";
-import { cookies, headers } from "next/headers";
+import "@/server/guard";
+import { cookies, headers } from "@/server/next-headers";
 import { db, persist, type StoredSession, type StoredUser } from "./db";
 import { id, nowIso, randomToken, sha256 } from "./util";
 import { permissionsFor } from "@/lib/rbac";

@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -89,7 +90,7 @@ export default function AutomationsPage() {
                 <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${a.enabled ? "bg-[color-mix(in_srgb,var(--mint)_14%,transparent)] text-mint" : "bg-surface-3 text-faint"}`}>
                   <TriggerIcon t={a.trigger} />
                 </span>
-                <button className="min-w-0 flex-1 text-left" onClick={() => router.push(`/automations/${a.id}`)}>
+                <button className="min-w-0 flex-1 text-left" onClick={() => router.push(appHref(`/automations/${a.id}`))}>
                   <div className="truncate text-[15px] font-semibold group-hover:underline">{a.name}</div>
                   <div className="truncate text-[12.5px] text-muted">{triggerSummary(a.trigger, boot.devices)}{a.end ? ` → ends ${a.end.time}` : ""}</div>
                 </button>
@@ -112,7 +113,7 @@ export default function AutomationsPage() {
                   {(close) => (
                     <div className="py-1">
                       <MenuItem icon={<Play className="size-4" />} onClick={() => (close(), void run(a))}>Run now</MenuItem>
-                      {manage && <MenuItem icon={<Pencil className="size-4" />} onClick={() => (close(), router.push(`/automations/${a.id}`))}>Edit</MenuItem>}
+                      {manage && <MenuItem icon={<Pencil className="size-4" />} onClick={() => (close(), router.push(appHref(`/automations/${a.id}`)))}>Edit</MenuItem>}
                       {manage && <MenuItem icon={<Copy className="size-4" />} onClick={() => (close(), void duplicate(a))}>Duplicate</MenuItem>}
                       {manage && <MenuItem danger icon={<Trash2 className="size-4" />} onClick={() => (close(), void remove(a))}>Delete</MenuItem>}
                     </div>

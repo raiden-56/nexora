@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import { describeCommand, describeState, has, isSwitchable } from "@/lib/devices";
 import type { Capability, Device, DeviceCommand } from "@/lib/types";

@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { has } from "@/lib/devices";
 import { bus } from "../bus";
 import { db, persist } from "../db";

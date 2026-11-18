@@ -1,8 +1,15 @@
-"use client";
-import { useParams } from "next/navigation";
-import { AutomationEditor } from "@/components/automation/AutomationEditor";
+import { Suspense } from "react";
+import View from "./View";
 
-export default function AutomationPage() {
-  const { id } = useParams<{ id: string }>();
-  return <AutomationEditor key={id} id={id} />;
+// "_" is the single pre-rendered page the static (GitHub Pages) build serves for every id via ?id=.
+export function generateStaticParams() {
+  return [{ id: "_" }];
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <View />
+    </Suspense>
+  );
 }

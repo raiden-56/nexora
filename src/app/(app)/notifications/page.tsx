@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
@@ -73,7 +74,7 @@ export default function NotificationsPage() {
                       </div>
                       <p className="mt-0.5 text-[13px] text-muted">{n.body}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px]">
-                        {n.link && <Link href={n.link} onClick={() => !n.read && setRead(n, true)} className="font-medium text-mint hover:underline">View</Link>}
+                        {n.link && <Link href={appHref(n.link)} onClick={() => !n.read && setRead(n, true)} className="font-medium text-mint hover:underline">View</Link>}
                         <button onClick={() => setRead(n, !n.read)} className="text-muted hover:text-text">{n.read ? "Mark unread" : "Mark read"}</button>
                       </div>
                     </div>

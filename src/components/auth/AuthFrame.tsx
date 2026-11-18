@@ -1,6 +1,7 @@
 "use client";
 import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
+import { STATIC_DEMO } from "@/lib/routes";
 import { Logo } from "../brand";
 
 /** Isometric property illustration with live-looking device nodes. Purely decorative. */
@@ -86,10 +87,15 @@ export function AuthFrame({ children, title, subtitle }: { children: ReactNode; 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="w-full max-w-[400px]">
             <h1 className="text-display text-[28px]">{title}</h1>
             <p className="mt-2 text-[14px] text-muted">{subtitle}</p>
+            {STATIC_DEMO && (
+              <p className="mt-5 rounded-xl border border-line bg-surface-2 px-3.5 py-3 text-[12.5px] leading-relaxed text-muted">
+                <span className="font-semibold text-text">Browser-only preview.</span> This GitHub Pages build runs the Nexora backend inside your browser: data is saved on this device only, and automations run only while a Nexora tab is open. All devices are simulated.
+              </p>
+            )}
             <div className="mt-8">{children}</div>
           </motion.div>
         </div>
-        <p className="text-center text-[11.5px] text-faint">© {new Date().getFullYear()} Nexora · Secure sessions · Tenant-isolated data</p>
+        <p className="text-center text-[11.5px] text-faint">© {new Date().getFullYear()} Nexora · {STATIC_DEMO ? "Static demo · data stays in this browser" : "Secure sessions · Tenant-isolated data"}</p>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import crypto from "node:crypto";
+import crypto from "@/server/node-crypto";
 
 export const id = (prefix = "") => prefix + crypto.randomUUID().replace(/-/g, "").slice(0, 16);
 export const nowIso = () => new Date().toISOString();

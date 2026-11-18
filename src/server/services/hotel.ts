@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import type { DeviceCommand, Room } from "@/lib/types";
 import { ApiError, type Ctx } from "../auth";

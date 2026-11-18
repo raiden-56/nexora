@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useState } from "react";
 import useSWR, { useSWRConfig } from "swr";
@@ -161,12 +162,12 @@ export default function RoomsPage() {
                   const roomAutos = (autos?.automations ?? []).filter((a) => a.actions.some((x) => x.type === "device" && devs.some((d) => d.id === x.deviceId)) || a.conditions.some((c) => c.type === "room_occupied" && c.roomId === r.id));
                   return (
                     <Card key={r.id} className="overflow-hidden">
-                      <Link href={`/rooms/${r.id}`} className="block">
+                      <Link href={appHref(`/rooms/${r.id}`)} className="block">
                         <RoomArt kind={r.kind} lit={s.active > 0} className="h-28" />
                       </Link>
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2">
-                          <Link href={`/rooms/${r.id}`} className="min-w-0">
+                          <Link href={appHref(`/rooms/${r.id}`)} className="min-w-0">
                             <div className="truncate text-[15px] font-semibold hover:underline">{r.name}</div>
                             <div className="text-[12px] text-faint">
                               {ROOM_KIND_LABEL[r.kind]}

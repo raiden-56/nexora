@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import type { ProviderKey } from "@/lib/types";
 import { homeAssistantProvider } from "./homeAssistant";
 import { pendingProvider } from "./pending";

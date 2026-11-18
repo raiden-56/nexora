@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -45,11 +46,11 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     const out: Hit[] = [];
     for (const d of data.devices) {
       const room = roomById.get(d.roomId)?.name;
-      if (m(d.name, room, DEVICE_CATALOG[d.type].label)) out.push({ id: d.id, group: "Devices", label: d.name, sub: `${DEVICE_CATALOG[d.type].label} · ${room ?? ""}`, href: `/devices/${d.id}`, icon: <DeviceGlyph device={d} size="sm" /> });
+      if (m(d.name, room, DEVICE_CATALOG[d.type].label)) out.push({ id: d.id, group: "Devices", label: d.name, sub: `${DEVICE_CATALOG[d.type].label} · ${room ?? ""}`, href: appHref(`/devices/${d.id}`), icon: <DeviceGlyph device={d} size="sm" /> });
     }
-    for (const r of data.rooms) if (m(r.name)) out.push({ id: r.id, group: "Rooms", label: r.name, sub: data.floors.find((f) => f.id === r.floorId)?.name ?? "", href: `/rooms/${r.id}`, icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-cyan"><DoorOpen className="size-4" /></span> });
+    for (const r of data.rooms) if (m(r.name)) out.push({ id: r.id, group: "Rooms", label: r.name, sub: data.floors.find((f) => f.id === r.floorId)?.name ?? "", href: appHref(`/rooms/${r.id}`), icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-cyan"><DoorOpen className="size-4" /></span> });
     for (const s of data.scenes) if (m(s.name, s.description)) out.push({ id: s.id, group: "Scenes", label: s.name, sub: s.description, href: `/scenes?focus=${s.id}`, icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-violet"><Sparkles className="size-4" /></span> });
-    for (const a of autos?.automations ?? []) if (m(a.name, a.description)) out.push({ id: a.id, group: "Automations", label: a.name, sub: a.description, href: `/automations/${a.id}`, icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-mint"><Workflow className="size-4" /></span> });
+    for (const a of autos?.automations ?? []) if (m(a.name, a.description)) out.push({ id: a.id, group: "Automations", label: a.name, sub: a.description, href: appHref(`/automations/${a.id}`), icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-mint"><Workflow className="size-4" /></span> });
     for (const p of ALL_ITEMS) if (term && m(p.label)) out.push({ id: p.href, group: "Pages", label: p.label, sub: "Go to page", href: p.href, icon: <span className="flex size-8 items-center justify-center rounded-xl bg-surface-3 text-muted"><p.icon className="size-4" /></span> });
     return out.slice(0, term ? 40 : 12);
   }, [data, q, autos, roomById]);

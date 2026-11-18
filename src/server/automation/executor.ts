@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { describeCommand } from "@/lib/devices";
 import type { Automation, DeviceCommand, Execution, ExecutionStatus, ExecutionStep, Scene } from "@/lib/types";
 import { db, persist } from "../db";

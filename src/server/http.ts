@@ -1,5 +1,5 @@
-import "server-only";
-import { NextResponse } from "next/server";
+import "@/server/guard";
+import { NextResponse } from "@/server/next-server";
 import { ZodError, type ZodType } from "zod";
 import { ApiError } from "./auth";
 import { ensureScheduler } from "./automation/scheduler";

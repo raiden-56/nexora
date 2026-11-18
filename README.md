@@ -4,6 +4,8 @@
 
 Nexora is a vendor-neutral, multi-tenant smart automation and device-management platform for homes, hotels and offices. This repository contains the **web application and its backend API** (Next.js App Router, TypeScript), a provider-based device integration layer, a server-side automation scheduler, and a fully interactive demo dataset built on clearly labelled simulated hardware.
 
+**Live demo (browser-only build):** https://raiden-56.github.io/nexora/
+
 ---
 
 ## Quick start
@@ -39,6 +41,23 @@ npm test            # Vitest: scheduler/DST, conditions, permissions, command va
 npm run build       # production build
 npm start           # serve the production build on :3000
 ```
+
+### GitHub Pages demo build
+
+GitHub Pages only serves static files, so the Pages site is a separate **browser-only** build of the same code:
+
+```bash
+npm run build:pages          # static export into ./out, served under /nexora
+```
+
+- The real route handlers and services from `src/app/api` and `src/server` are bundled into the page (`src/demo/backend.ts`) and `/api/*` calls are dispatched to them in the browser.
+- Node-only modules are reached through small wrappers (`src/server/guard.ts`, `next-headers.ts`, `next-server.ts`, `node-fs.ts`, `node-path.ts`, `node-crypto.ts`) that `next.config.ts` swaps for the browser shims in `src/demo/shims` when `NEXORA_STATIC=1`.
+- Data lives in the visitor's `localStorage`; each visitor has a private copy.
+- **Automations only run while a Nexora tab is open**, and passwords use a demo-only hash. This is a preview, not a deployment.
+- Detail pages use `/devices/_/?id=…` because a static export can only pre-render known paths.
+- `.github/workflows/pages.yml` rebuilds the site on every push to `main` and publishes it to the `gh-pages` branch.
+
+For the real app — server-side scheduler, shared data, real sessions — run it on a Node host or with Docker.
 
 ### Docker
 

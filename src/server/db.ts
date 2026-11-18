@@ -1,6 +1,6 @@
-import "server-only";
-import fs from "node:fs";
-import path from "node:path";
+import "@/server/guard";
+import fs from "@/server/node-fs";
+import path from "@/server/node-path";
 import { createSeed } from "./seed";
 import type {
   ActivityLog,
@@ -74,7 +74,8 @@ export interface Database {
   meta: { schedulerLastTick: string | null; seededAt: string };
 }
 
-const DATA_DIR = path.join(process.cwd(), ".data");
+// process.cwd() is missing in the static demo build, where fs is backed by localStorage.
+const DATA_DIR = path.join(typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : "/", ".data");
 const DATA_FILE = path.join(DATA_DIR, "nexora.json");
 const SCHEMA_VERSION = 1;
 
@@ -118,10 +119,12 @@ function flush() {
   const data = g.__nexoraDb;
   if (!data) return;
   // Bound unbounded tables so the demo file stays small.
-  data.stateHistory = data.stateHistory.slice(-4000);
-  data.activity = data.activity.slice(-3000);
-  data.executions = data.executions.slice(-1500);
-  data.notifications = data.notifications.slice(-600);
+  // The static demo keeps the database in localStorage (~5 MB), so it keeps less history.
+  const small = process.env.NEXT_PUBLIC_NEXORA_STATIC === "1";
+  data.stateHistory = data.stateHistory.slice(small ? -1200 : -4000);
+  data.activity = data.activity.slice(small ? -800 : -3000);
+  data.executions = data.executions.slice(small ? -400 : -1500);
+  data.notifications = data.notifications.slice(small ? -200 : -600);
   const now = Date.now();
   data.sessions = data.sessions.filter((s) => Date.parse(s.expiresAt) > now);
   fs.mkdirSync(DATA_DIR, { recursive: true });

@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import useSWR, { useSWRConfig } from "swr";
 import { Briefcase, Building2, CalendarClock, Moon, PowerOff, ShieldCheck, Users, Zap } from "lucide-react";
@@ -79,7 +80,7 @@ export default function OfficePage() {
               const devs = devicesByRoom.get(r.id) ?? [];
               const on = devs.filter(isActive).length;
               return (
-                <Link key={r.id} href={`/rooms/${r.id}`} className="rounded-2xl border border-line bg-surface-2 p-4 transition hover:border-line-strong">
+                <Link key={r.id} href={appHref(`/rooms/${r.id}`)} className="rounded-2xl border border-line bg-surface-2 p-4 transition hover:border-line-strong">
                   <div className="flex items-center justify-between">
                     <span className="text-[14px] font-semibold">{r.name}</span>
                     <Badge tone={r.occupied ? "violet" : "ok"}>{r.occupied ? "In use" : "Free"}</Badge>
@@ -103,7 +104,7 @@ export default function OfficePage() {
           <ul className="space-y-1 p-3">
             {timeAutos.map((a) => (
               <li key={a.id}>
-                <Link href={`/automations/${a.id}`} className="flex items-center justify-between gap-3 rounded-xl p-3 hover:bg-surface-2">
+                <Link href={appHref(`/automations/${a.id}`)} className="flex items-center justify-between gap-3 rounded-xl p-3 hover:bg-surface-2">
                   <span className="min-w-0">
                     <span className="block truncate text-[13.5px] font-medium">{a.name}</span>
                     <span className="block truncate text-[12px] text-faint">{triggerSummary(a.trigger, data.devices)}{a.end ? ` → ${a.end.time}` : ""}</span>

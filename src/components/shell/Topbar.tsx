@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -114,7 +115,7 @@ export function NotificationBell() {
             {data?.notifications.slice(0, 8).map((n) => {
               const Icon = sevIcon[n.severity];
               return (
-                <Link key={n.id} href={n.link ?? "/notifications"} onClick={() => (void markOne(n), close())} className={cx("flex gap-3 border-b border-line px-4 py-3 transition last:border-0 hover:bg-surface-2", !n.read && "bg-[color-mix(in_srgb,var(--mint)_4%,transparent)]")}>
+                <Link key={n.id} href={appHref(n.link ?? "/notifications")} onClick={() => (void markOne(n), close())} className={cx("flex gap-3 border-b border-line px-4 py-3 transition last:border-0 hover:bg-surface-2", !n.read && "bg-[color-mix(in_srgb,var(--mint)_4%,transparent)]")}>
                   <Icon className="mt-0.5 size-4 shrink-0" style={{ color: sevColor[n.severity] }} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">

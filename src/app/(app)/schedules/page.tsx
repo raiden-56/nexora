@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import useSWR from "swr";
 import { CalendarClock, CircleCheck, Moon, Play, Server, Sunrise, Sunset } from "lucide-react";
@@ -68,7 +69,7 @@ export default function SchedulesPage() {
                 {items.map((it, i) => {
                   const Icon = it.phase === "end" ? Moon : it.trigger.type === "sunrise" ? Sunrise : it.trigger.type === "sunset" ? Sunset : Play;
                   return (
-                    <Link key={i} href={`/automations/${it.automationId}`} className="flex items-center gap-4 px-4 py-3.5 hover:bg-surface-2 sm:px-5">
+                    <Link key={i} href={appHref(`/automations/${it.automationId}`)} className="flex items-center gap-4 px-4 py-3.5 hover:bg-surface-2 sm:px-5">
                       <div className="num w-16 shrink-0 font-display text-[15px] font-bold sm:w-20">{new Date(it.at).toLocaleTimeString("en-IN", { timeZone: tz, hour: "numeric", minute: "2-digit" })}</div>
                       <span className="relative flex size-8 shrink-0 items-center justify-center rounded-lg" style={{ color: it.phase === "end" ? "var(--blue)" : "var(--mint)", background: "var(--surface-2)" }}>
                         <Icon className="size-4" />

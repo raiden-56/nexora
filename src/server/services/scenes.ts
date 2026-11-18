@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import type { Scene } from "@/lib/types";
 import { ApiError, rateLimit, type Ctx } from "../auth";

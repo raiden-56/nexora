@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { DEVICE_CATALOG } from "@/lib/devices";
 import type { Device, DeviceCommand, DeviceState, DeviceType } from "@/lib/types";
 import { sleep } from "../util";

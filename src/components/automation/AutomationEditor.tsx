@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,7 +52,7 @@ export function AutomationEditor({ id }: { id?: string }) {
       } else {
         const created = await api<AutomationView>("/api/automations", { body: current });
         toast({ tone: "success", title: `${created.name} created`, body: created.next[0] ? `Next run ${timeIn(created.next[0].at, property.timezone, { weekday: "short" })}` : "Ready to run." });
-        router.push(`/automations/${created.id}`);
+        router.push(appHref(`/automations/${created.id}`));
       }
     } catch (e) {
       toast({ tone: "error", title: "Couldn't save", body: (e as Error).message });
@@ -115,7 +116,7 @@ export function AutomationEditor({ id }: { id?: string }) {
               icon={<Copy className="size-4" />}
               onClick={async () => {
                 const c = await api<AutomationView>(`/api/automations/${id}/duplicate`, { method: "POST" });
-                router.push(`/automations/${c.id}`);
+                router.push(appHref(`/automations/${c.id}`));
               }}
             >
               Duplicate

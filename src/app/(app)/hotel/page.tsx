@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useState } from "react";
 import { useSWRConfig } from "swr";
@@ -175,7 +176,7 @@ function RoomOps({ room, canOperate, onDone }: { room: Room; canOperate: boolean
         <ul className="divide-y divide-[var(--line)] rounded-2xl border border-line">
           {devs.map((d) => (
             <li key={d.id}>
-              <Link href={`/devices/${d.id}`} className="flex items-center justify-between gap-3 px-4 py-3 text-[13px] hover:bg-surface-2">
+              <Link href={appHref(`/devices/${d.id}`)} className="flex items-center justify-between gap-3 px-4 py-3 text-[13px] hover:bg-surface-2">
                 <span className="flex min-w-0 items-center gap-2">
                   <span className={cx("size-2 shrink-0 rounded-full", !d.online ? "bg-err" : d.state.on || d.state.locked === false ? "bg-mint" : "bg-idle")} />
                   <span className="truncate">{d.name}</span>
@@ -186,7 +187,7 @@ function RoomOps({ room, canOperate, onDone }: { room: Room; canOperate: boolean
             </li>
           ))}
         </ul>
-        <Link href={`/rooms/${room.id}`} className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-mint">
+        <Link href={appHref(`/rooms/${room.id}`)} className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-medium text-mint">
           <DoorOpen className="size-4" /> Open room controls (manual override)
         </Link>
       </div>

@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { estimateWatts } from "@/lib/devices";
 import type { Device } from "@/lib/types";
 import type { Ctx } from "../auth";

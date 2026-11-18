@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import type { Floor, Property, Room, RoomKind } from "@/lib/types";
 import { ApiError, type Ctx } from "../auth";

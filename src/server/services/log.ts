@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { db, persist } from "../db";
 import { id, nowIso } from "../util";
 import type { ActivityLog, Notification } from "@/lib/types";

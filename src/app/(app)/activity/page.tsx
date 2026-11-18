@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -67,7 +68,7 @@ export default function ActivityPage() {
                 {data.rows.map((a) => (
                   <tr key={a.id} className="hover:bg-surface-2">
                     <td className="num whitespace-nowrap px-4 py-3 text-faint">{time(a.at)}</td>
-                    <td className="px-4 py-3 font-medium">{a.deviceId && boot?.devices.some((d) => d.id === a.deviceId) ? <Link className="hover:underline" href={`/devices/${a.deviceId}`}>{a.deviceName}</Link> : a.deviceName ?? "—"}</td>
+                    <td className="px-4 py-3 font-medium">{a.deviceId && boot?.devices.some((d) => d.id === a.deviceId) ? <Link className="hover:underline" href={appHref(`/devices/${a.deviceId}`)}>{a.deviceName}</Link> : a.deviceName ?? "—"}</td>
                     <td className="px-4 py-3">{a.action}</td>
                     <td className="px-4 py-3 text-text-2">{a.previous ?? "—"} <span className="text-faint">→</span> {a.next ?? "—"}</td>
                     <td className="px-4 py-3 text-text-2">{a.userName ?? (a.automationId ? "Automation" : "System")}</td>

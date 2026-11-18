@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Users } from "lucide-react";
@@ -19,7 +20,7 @@ export function roomStats(devices: Device[]) {
  * Interactive architectural floor plan: rooms placed on a 12×8 grid, device markers glow with
  * live state. On phones it becomes a tappable room list instead of a cramped drawing.
  */
-export function FloorPlan({ rooms, devicesByRoom, hrefFor = (r) => `/rooms/${r.id}`, showMarkers = true }: { rooms: Room[]; devicesByRoom: Map<string, Device[]>; hrefFor?: (r: Room) => string; showMarkers?: boolean }) {
+export function FloorPlan({ rooms, devicesByRoom, hrefFor = (r) => appHref(`/rooms/${r.id}`), showMarkers = true }: { rooms: Room[]; devicesByRoom: Map<string, Device[]>; hrefFor?: (r: Room) => string; showMarkers?: boolean }) {
   if (!rooms.length) return <div className="flex aspect-[12/8] items-center justify-center rounded-2xl border border-dashed border-line-strong text-[13px] text-muted">No rooms on this floor yet.</div>;
   return (
     <>

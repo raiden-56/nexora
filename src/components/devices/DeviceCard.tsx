@@ -1,4 +1,5 @@
 "use client";
+import { appHref } from "@/lib/routes";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Lock, LockOpen, WifiOff } from "lucide-react";
@@ -84,7 +85,7 @@ export function DeviceCard({
     <motion.div layout="position" whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 400, damping: 30 }}>
       <CardShell
         onOpen={onOpen}
-        href={`/devices/${device.id}`}
+        href={appHref(`/devices/${device.id}`)}
         className={cx(
           "focus-ring group card relative flex h-full flex-col overflow-hidden p-4 transition-colors hover:border-line-strong",
           selected && "border-[var(--mint)]! ring-1 ring-[var(--mint)]",

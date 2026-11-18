@@ -1,4 +1,4 @@
-import "server-only";
+import "@/server/guard";
 import { z } from "zod";
 import type { Organization } from "@/lib/types";
 import { ApiError, readSession, type Ctx } from "../auth";
