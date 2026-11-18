@@ -1,0 +1,35 @@
+# Runs the Nexora app with persistent demo data.
+# PostgreSQL and Redis are included for the production migration path (prisma/schema.prisma, BullMQ);
+# the current build persists to the ./data volume and does not require them yet.
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.example
+    volumes:
+      - nexora-data:/app/.data
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["production"]
+    environment:
+      POSTGRES_USER: nexora
+      POSTGRES_PASSWORD: change-me
+      POSTGRES_DB: nexora
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    profiles: ["production"]
+    ports:
+      - "6379:6379"
+
+volumes:
+  nexora-data:
+  pg-data:

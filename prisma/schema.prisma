@@ -1,0 +1,530 @@
+// NEXORA — production data model (PostgreSQL via Prisma)
+//
+// The running demo persists the same normalized tables to .data/nexora.json through
+// src/server/db.ts. This schema is the migration target for the NestJS + PostgreSQL backend.
+// Every tenant-owned table carries organizationId and is indexed on it; repositories must
+// always filter by organizationId (enforced in src/server/auth.ts requireCtx / Ctx).
+//
+// Not yet wired: run `npx prisma migrate dev --name init` after adding `prisma` + `@prisma/client`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrgType {
+  RESIDENTIAL
+  COMMERCIAL
+  HOSPITALITY
+}
+
+enum Plan {
+  TRIAL
+  RESIDENTIAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum RoleKey {
+  OWNER
+  PROPERTY_MANAGER
+  FACILITY_MANAGER
+  HOTEL_MANAGER
+  STAFF
+  RESIDENT
+  GUEST
+  CUSTOM
+}
+
+enum ProviderKey {
+  SIMULATED
+  HOME_ASSISTANT
+  TUYA
+  MATTER
+  MQTT
+  ZIGBEE
+}
+
+enum ExecutionStatus {
+  SUCCESS
+  PARTIAL
+  FAILED
+  SKIPPED
+}
+
+enum ActivitySource {
+  USER
+  AUTOMATION
+  SCENE
+  SYSTEM
+  INTEGRATION
+  GATEWAY
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  mfaSecret    String? // encrypted TOTP secret
+  mfaEnabled   Boolean  @default(false)
+  isSuperAdmin Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  memberships OrganizationMember[]
+  sessions    Session[]
+  activity    ActivityLog[]
+}
+
+model Session {
+  id               String    @id // sha256(token)
+  userId           String
+  activeOrgId      String?
+  activePropertyId String?
+  userAgent        String?
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime
+  revokedAt        DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  type      OrgType
+  plan      Plan     @default(TRIAL)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members      OrganizationMember[]
+  roles        Role[]
+  properties   Property[]
+  devices      Device[]
+  automations  Automation[]
+  scenes       Scene[]
+  integrations IntegrationAccount[]
+  invitations  Invitation[]
+  notifications Notification[]
+  activity     ActivityLog[]
+}
+
+model Role {
+  id             String       @id @default(cuid())
+  organizationId String
+  key            RoleKey
+  name           String
+  permissions    Permission[]
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        OrganizationMember[]
+
+  @@unique([organizationId, name])
+}
+
+model Permission {
+  id     String @id @default(cuid())
+  roleId String
+  key    String // e.g. devices.control
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, key])
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  roleId         String
+  /// null = every property; otherwise explicit property grants in MemberPropertyAccess
+  allProperties  Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role         Role                   @relation(fields: [roleId], references: [id])
+  properties   MemberPropertyAccess[]
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+model MemberPropertyAccess {
+  memberId   String
+  propertyId String
+  roomIds    String[] // optional room-level restriction
+
+  member   OrganizationMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  property Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, propertyId])
+}
+
+model Invitation {
+  id             String    @id @default(cuid())
+  organizationId String
+  email          String
+  roleKey        RoleKey
+  propertyIds    String[]
+  tokenHash      String    @unique
+  status         String    @default("pending")
+  invitedById    String
+  createdAt      DateTime  @default(now())
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, email])
+}
+
+model Property {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  kind           String
+  address        String   @default("")
+  timezone       String // IANA, used by the scheduler
+  latitude       Float
+  longitude      Float
+  mode           String   @default("home")
+  tariffPerKwh   Decimal  @db.Decimal(10, 4)
+  currency       String   @default("INR")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  buildings    Building[]
+  rooms        Room[]
+  devices      Device[]
+  memberAccess MemberPropertyAccess[]
+
+  @@index([organizationId])
+}
+
+model Building {
+  id             String  @id @default(cuid())
+  organizationId String
+  propertyId     String
+  name           String
+  property       Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  floors         Floor[]
+
+  @@index([organizationId, propertyId])
+}
+
+model Floor {
+  id             String   @id @default(cuid())
+  organizationId String
+  buildingId     String
+  name           String
+  sortOrder      Int
+  building       Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  rooms          Room[]
+
+  @@index([organizationId, buildingId])
+}
+
+model Room {
+  id             String  @id @default(cuid())
+  organizationId String
+  propertyId     String
+  floorId        String
+  name           String
+  kind           String
+  sortOrder      Int
+  occupied       Boolean @default(false)
+  department     String?
+  planX          Int
+  planY          Int
+  planW          Int
+  planH          Int
+  hotelStatus    String? // vacant | occupied | checkout | cleaning | maintenance
+  guestName      String?
+  checkInAt      DateTime?
+
+  floor    Floor    @relation(fields: [floorId], references: [id], onDelete: Restrict)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  devices  Device[]
+
+  @@index([organizationId, propertyId])
+  @@index([floorId])
+}
+
+model IntegrationAccount {
+  id                String      @id @default(cuid())
+  organizationId    String
+  provider          ProviderKey
+  label             String
+  status            String
+  encryptedSecret   Bytes? // AES-256-GCM with KMS-managed key — never returned by the API
+  lastSyncAt        DateTime?
+  message           String?
+  createdAt         DateTime    @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  devices      Device[]
+
+  @@index([organizationId])
+}
+
+model Device {
+  id             String      @id @default(cuid())
+  organizationId String
+  propertyId     String
+  roomId         String
+  integrationId  String?
+  provider       ProviderKey
+  externalId     String
+  name           String
+  type           String
+  state          Json
+  online         Boolean     @default(true)
+  essential      Boolean     @default(false)
+  ratedWatts     Float
+  manufacturer   String
+  model          String
+  firmware       String
+  markerX        Float?
+  markerY        Float?
+  lastSeenAt     DateTime
+  createdAt      DateTime    @default(now())
+
+  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  property     Property            @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  room         Room                @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  integration  IntegrationAccount? @relation(fields: [integrationId], references: [id])
+  capabilities DeviceCapability[]
+  groups       DeviceGroupMember[]
+  history      DeviceStateHistory[]
+  commands     DeviceCommand[]
+  energy       EnergyReading[]
+
+  @@unique([organizationId, integrationId, externalId])
+  @@index([organizationId, propertyId])
+  @@index([roomId])
+}
+
+model DeviceCapability {
+  deviceId   String
+  capability String
+  device     Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@id([deviceId, capability])
+}
+
+model DeviceGroup {
+  id             String              @id @default(cuid())
+  organizationId String
+  propertyId     String
+  name           String
+  members        DeviceGroupMember[]
+
+  @@index([organizationId, propertyId])
+}
+
+model DeviceGroupMember {
+  groupId  String
+  deviceId String
+  group    DeviceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  device   Device      @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, deviceId])
+}
+
+model DeviceStateHistory {
+  id             String   @id @default(cuid())
+  organizationId String
+  deviceId       String
+  state          Json
+  online         Boolean
+  at             DateTime @default(now())
+  device         Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, at])
+}
+
+model DeviceCommand {
+  id             String    @id @default(cuid())
+  organizationId String
+  deviceId       String
+  command        Json
+  source         ActivitySource
+  status         String // queued | sent | confirmed | failed
+  attempts       Int       @default(0)
+  error          String?
+  requestedById  String?
+  createdAt      DateTime  @default(now())
+  confirmedAt    DateTime?
+  device         Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@index([deviceId, createdAt])
+}
+
+model Automation {
+  id             String   @id @default(cuid())
+  organizationId String
+  propertyId     String
+  name           String
+  description    String   @default("")
+  enabled        Boolean  @default(true)
+  endTime        String? // HH:MM local
+  onUnreachable  String   @default("retry_then_notify")
+  lastRunAt      DateTime?
+  lastStatus     ExecutionStatus?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  triggers     AutomationTrigger[]
+  conditions   AutomationCondition[]
+  actions      AutomationAction[]
+  executions   AutomationExecution[]
+  schedules    Schedule[]
+
+  @@index([organizationId, propertyId])
+}
+
+model AutomationTrigger {
+  id           String     @id @default(cuid())
+  automationId String
+  type         String // time | sunrise | sunset | device_state | temperature_change | manual
+  config       Json
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+}
+
+model AutomationCondition {
+  id           String     @id @default(cuid())
+  automationId String
+  actionId     String? // null = automation-level condition
+  type         String
+  config       Json
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+}
+
+model AutomationAction {
+  id           String     @id @default(cuid())
+  automationId String
+  sortOrder    Int
+  type         String // device | scene | notify | delay
+  config       Json
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId, sortOrder])
+}
+
+model Schedule {
+  id           String     @id @default(cuid())
+  automationId String
+  /// BullMQ repeatable job key; jobId of each occurrence = dedupeKey
+  jobKey       String     @unique
+  nextRunAt    DateTime?
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+}
+
+model AutomationExecution {
+  id             String          @id @default(cuid())
+  organizationId String
+  propertyId     String
+  automationId   String?
+  sceneId        String?
+  name           String
+  phase          String
+  status         ExecutionStatus
+  source         String
+  steps          Json
+  dedupeKey      String          @unique // exactly-once guarantee per occurrence
+  userId         String?
+  startedAt      DateTime
+  finishedAt     DateTime
+  automation     Automation?     @relation(fields: [automationId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, propertyId, startedAt])
+  @@index([automationId, startedAt])
+}
+
+model Scene {
+  id             String        @id @default(cuid())
+  organizationId String
+  propertyId     String
+  name           String
+  description    String        @default("")
+  icon           String
+  accent         String
+  lastActivatedAt DateTime?
+  createdAt      DateTime      @default(now())
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actions      SceneAction[]
+
+  @@index([organizationId, propertyId])
+}
+
+model SceneAction {
+  id        String @id @default(cuid())
+  sceneId   String
+  deviceId  String
+  sortOrder Int
+  command   Json
+  scene     Scene  @relation(fields: [sceneId], references: [id], onDelete: Cascade)
+
+  @@index([sceneId, sortOrder])
+}
+
+model Notification {
+  id             String   @id @default(cuid())
+  organizationId String
+  propertyId     String?
+  userId         String? // null = everyone with access
+  type           String
+  severity       String
+  title          String
+  body           String
+  link           String?
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, read, createdAt])
+}
+
+model EnergyReading {
+  id             String   @id @default(cuid())
+  organizationId String
+  deviceId       String
+  hourStart      DateTime
+  wattHours      Float
+  source         String // telemetry | estimate
+  device         Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, hourStart])
+  @@index([organizationId, hourStart])
+}
+
+model ActivityLog {
+  id             String         @id @default(cuid())
+  organizationId String
+  propertyId     String?
+  userId         String?
+  deviceId       String?
+  deviceName     String?
+  action         String
+  previous       String?
+  next           String?
+  source         ActivitySource
+  automationId   String?
+  at             DateTime       @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, at])
+  @@index([deviceId, at])
+}
