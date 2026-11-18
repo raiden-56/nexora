@@ -18,14 +18,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - run: npm ci
+      # `npm ci` trips an npm bug with Tailwind's bundled wasm deps ("Missing: @emnapi/core").
+      - run: npm install --no-audit --no-fund
       - run: npm test
       - run: node scripts/build-pages.mjs "/${{ github.event.repository.name }}"
 
