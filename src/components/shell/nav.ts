@@ -5,6 +5,7 @@ import {
   Briefcase,
   Building2,
   CalendarClock,
+  Cctv,
   ConciergeBell,
   Cpu,
   Layers,
@@ -34,6 +35,7 @@ export const NAV: { section: string; items: NavItem[] }[] = [
       { href: "/properties", label: "Properties", icon: Building2 },
       { href: "/devices", label: "Devices", icon: Cpu },
       { href: "/rooms", label: "Rooms & Floors", icon: Layers },
+      { href: "/cameras", label: "CCTV", icon: Cctv, permission: "cameras.view" },
     ],
   },
   {

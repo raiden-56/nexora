@@ -16,6 +16,7 @@ import type {
 import { DEVICE_CATALOG } from "@/lib/devices";
 import type { Database, StoredUser } from "./db";
 import { hashPassword, id } from "./util";
+import { addDemoCameras } from "./seedCameras";
 
 /** Demo credentials — also documented in README and .env.example. */
 export const DEMO_EMAIL = "demo@nexora.app";
@@ -38,6 +39,7 @@ const MANUFACTURERS: Partial<Record<DeviceType, [string, string]>> = {
   door_sensor: ["Nexora Labs", "Sense Contact"],
   temp_sensor: ["Nexora Labs", "Sense Climate"],
   appliance: ["Nexora Labs", "Appliance Link"],
+  camera: ["Nexora Labs", "Sentinel Bullet 4MP"],
 };
 
 export function createSeed(): Database {
@@ -564,8 +566,8 @@ export function createSeed(): Database {
   act(mehta, residence, lvCurtain, "Position set", "Closed", "70% open", "user", 60 * 3);
   act(mehta, residence, msAc, "Turned off", "Cool · 23°C", "Off", "scene", 60 * 9, null);
 
-  return {
-    version: 1,
+  const seeded: Database = {
+    version: 2,
     users,
     sessions: [],
     orgs,
@@ -589,6 +591,9 @@ export function createSeed(): Database {
       { id: id("int_"), orgId: aurelia.id, provider: "simulated", label: "Nexora Simulator", status: "connected", lastSyncAt: ago(1), createdAt: ago(60 * 24 * 80) },
       { id: id("int_"), orgId: helix.id, provider: "simulated", label: "Nexora Simulator", status: "connected", lastSyncAt: ago(1), createdAt: ago(60 * 24 * 80) },
     ],
+    cameraViews: [],
     meta: { schedulerLastTick: null, seededAt: iso(now) },
   };
+  addDemoCameras(seeded);
+  return seeded;
 }

@@ -10,6 +10,7 @@ import { Segmented, Slider, Switch } from "../ui/controls";
 import { Button } from "../ui/button";
 import { useConfirm } from "../ui/feedback";
 import { accentFor, DeviceGlyph } from "./DeviceIcon";
+import { CameraPanel } from "../cctv/CameraTile";
 
 const SWATCHES = ["#69E3C0", "#7DD9F2", "#5B6CFF", "#9C8CF6", "#F27BB8", "#F2B66D", "#F27878", "#FFFFFF"];
 
@@ -184,6 +185,8 @@ export function DeviceControls({ device, canControl }: { device: Device; canCont
           <Slider label="Position" value={pos.v} disabled={disabled} onChange={pos.set} onCommit={(v) => (pos.done(), send({ position: v }))} />
         </Row>
       )}
+
+      {has(device, "camera") && <CameraPanel device={device} canControl={canControl} />}
 
       {has(device, "lock") && (
         <Button

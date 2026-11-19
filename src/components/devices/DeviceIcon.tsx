@@ -1,5 +1,7 @@
 import {
   AirVent,
+  Cctv,
+  CctvOff,
   Blinds,
   Cpu,
   DoorClosed,
@@ -38,10 +40,12 @@ const MAP: Record<DeviceType, LucideIcon> = {
   door_sensor: DoorClosed,
   temp_sensor: Thermometer,
   appliance: Refrigerator,
+  camera: Cctv,
 };
 
 export function iconFor(d: Pick<Device, "type" | "state">): LucideIcon {
   if (d.type === "lock") return d.state.locked === false ? LockOpen : Lock;
+  if (d.type === "camera" && d.state.privacy) return CctvOff;
   if (d.type === "door_sensor") return d.state.contact === "open" ? DoorOpen : DoorClosed;
   return MAP[d.type] ?? Cpu;
 }
@@ -62,6 +66,8 @@ export function accentFor(d: Device): string {
     case "motion_sensor":
     case "door_sensor":
       return "var(--warn)";
+    case "camera":
+      return d.state.motion ? "var(--warn)" : "var(--mint)";
     default:
       return "var(--mint)";
   }

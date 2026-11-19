@@ -24,6 +24,8 @@ export const commandSchema = z
     position: z.number().int().min(0).max(100),
     stop: z.boolean(),
     locked: z.boolean(),
+    recording: z.boolean(),
+    privacy: z.boolean(),
   })
   .partial()
   .strict()
@@ -43,6 +45,8 @@ const KEY_CAPABILITY: Record<keyof DeviceCommand, Capability> = {
   position: "position",
   stop: "position",
   locked: "lock",
+  recording: "recording",
+  privacy: "privacy",
 };
 
 /** Rejects commands that the device's declared capabilities don't support. */
@@ -53,6 +57,11 @@ export function validateCommand(device: Pick<Device, "capabilities" | "name">, c
     if (!device.capabilities.includes(cap)) throw new ApiError(422, `${device.name} does not support "${key}".`);
   }
   return parsed;
+}
+
+/** True when the command would stop a camera recording or put it into privacy mode. */
+export function disablesSecurity(device: Pick<Device, "type">, command: DeviceCommand) {
+  return device.type === "camera" && (command.recording === false || command.privacy === true);
 }
 
 export interface CommandOutcome {
@@ -78,6 +87,10 @@ export async function executeDeviceCommand(opts: {
 }): Promise<CommandOutcome> {
   const { device, source } = opts;
   const command = validateCommand(device, opts.command);
+  // Security systems are never disabled automatically: only a person can stop recording or blind a camera.
+  if (source !== "user" && disablesSecurity(device, command)) {
+    return { ok: false, device, error: `${device.name} is a security device — only a person can stop its recording or turn on privacy mode.`, attempts: 0 };
+  }
   const d = db();
   const integration = device.integrationId ? d.integrations.find((i) => i.id === device.integrationId && i.orgId === device.orgId) ?? null : null;
   const provider = getProvider(device.provider);
@@ -144,7 +157,7 @@ export async function executeDeviceCommand(opts: {
 
 export function getDeviceForCtx(ctx: Ctx, deviceId: string): Device {
   const device = db().devices.find((x) => x.id === deviceId && x.orgId === ctx.orgId);
-  if (!device) throw new ApiError(404, "Device not found.");
+  if (!device || (device.type === "camera" && !ctx.can("cameras.view"))) throw new ApiError(404, "Device not found.");
   ctx.assertProperty(device.propertyId);
   return device;
 }

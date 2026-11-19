@@ -62,6 +62,13 @@ export function DeviceCard({
           ))}
         </div>
       );
+    if (has(device, "camera"))
+      return (
+        <span className={cx("inline-flex items-center gap-1.5 text-xs font-medium", device.state.privacy ? "text-muted" : device.state.recording ? "text-err" : "text-muted")}>
+          <span className={cx("size-1.5 rounded-full", device.state.privacy ? "bg-[var(--idle)]" : device.state.recording ? "animate-pulse bg-[var(--err)]" : "bg-[var(--idle)]")} />
+          {device.state.privacy ? "Privacy" : device.state.recording ? "REC" : "Live"}
+        </span>
+      );
     if (has(device, "lock"))
       return (
         <button

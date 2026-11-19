@@ -22,6 +22,7 @@ const DISCOVERABLE: { name: string; type: DeviceType; model: string }[] = [
   { name: "Sheer Curtain Motor", type: "curtain", model: "Glide Curtain Motor" },
   { name: "Back Door Contact", type: "door_sensor", model: "Sense Contact" },
   { name: "Corridor PIR", type: "motion_sensor", model: "Sense PIR" },
+  { name: "Driveway Camera", type: "camera", model: "Sentinel Bullet 4MP" },
 ];
 
 export function applyCommand(device: Device, cmd: DeviceCommand): DeviceState {

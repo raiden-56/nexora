@@ -7,47 +7,49 @@ import * as r4 from "@/app/api/auth/session/route";
 import * as r5 from "@/app/api/auth/switch-org/route";
 import * as r6 from "@/app/api/automations/route";
 import * as r7 from "@/app/api/bootstrap/route";
-import * as r8 from "@/app/api/demo/reset/route";
-import * as r9 from "@/app/api/devices/bulk/route";
-import * as r10 from "@/app/api/energy/route";
-import * as r11 from "@/app/api/executions/route";
-import * as r12 from "@/app/api/floors/reorder/route";
-import * as r13 from "@/app/api/floors/route";
-import * as r14 from "@/app/api/health/route";
-import * as r15 from "@/app/api/integrations/route";
-import * as r16 from "@/app/api/invitations/route";
-import * as r17 from "@/app/api/me/password/route";
-import * as r18 from "@/app/api/me/route";
-import * as r19 from "@/app/api/members/route";
-import * as r20 from "@/app/api/notifications/route";
-import * as r21 from "@/app/api/onboarding/route";
-import * as r22 from "@/app/api/org/route";
-import * as r23 from "@/app/api/pairing/discover/route";
-import * as r24 from "@/app/api/pairing/pair/route";
-import * as r25 from "@/app/api/properties/route";
-import * as r26 from "@/app/api/properties/select/route";
-import * as r27 from "@/app/api/rooms/reorder/route";
-import * as r28 from "@/app/api/rooms/route";
-import * as r29 from "@/app/api/scenes/route";
-import * as r30 from "@/app/api/schedules/route";
-import * as r31 from "@/app/api/automations/[id]/duplicate/route";
-import * as r32 from "@/app/api/automations/[id]/route";
-import * as r33 from "@/app/api/automations/[id]/run/route";
-import * as r34 from "@/app/api/devices/[id]/command/route";
-import * as r35 from "@/app/api/devices/[id]/route";
-import * as r36 from "@/app/api/devices/[id]/simulate/route";
-import * as r37 from "@/app/api/devices/[id]/test/route";
-import * as r38 from "@/app/api/floors/[id]/route";
-import * as r39 from "@/app/api/hotel/rooms/[id]/route";
-import * as r40 from "@/app/api/integrations/[id]/route";
-import * as r41 from "@/app/api/integrations/[id]/test/route";
-import * as r42 from "@/app/api/invitations/[id]/route";
-import * as r43 from "@/app/api/members/[id]/route";
-import * as r44 from "@/app/api/notifications/[id]/route";
-import * as r45 from "@/app/api/properties/[id]/route";
-import * as r46 from "@/app/api/rooms/[id]/route";
-import * as r47 from "@/app/api/scenes/[id]/activate/route";
-import * as r48 from "@/app/api/scenes/[id]/route";
+import * as r8 from "@/app/api/camera-views/route";
+import * as r9 from "@/app/api/demo/reset/route";
+import * as r10 from "@/app/api/devices/bulk/route";
+import * as r11 from "@/app/api/energy/route";
+import * as r12 from "@/app/api/executions/route";
+import * as r13 from "@/app/api/floors/reorder/route";
+import * as r14 from "@/app/api/floors/route";
+import * as r15 from "@/app/api/health/route";
+import * as r16 from "@/app/api/integrations/route";
+import * as r17 from "@/app/api/invitations/route";
+import * as r18 from "@/app/api/me/password/route";
+import * as r19 from "@/app/api/me/route";
+import * as r20 from "@/app/api/members/route";
+import * as r21 from "@/app/api/notifications/route";
+import * as r22 from "@/app/api/onboarding/route";
+import * as r23 from "@/app/api/org/route";
+import * as r24 from "@/app/api/pairing/discover/route";
+import * as r25 from "@/app/api/pairing/pair/route";
+import * as r26 from "@/app/api/properties/route";
+import * as r27 from "@/app/api/properties/select/route";
+import * as r28 from "@/app/api/rooms/reorder/route";
+import * as r29 from "@/app/api/rooms/route";
+import * as r30 from "@/app/api/scenes/route";
+import * as r31 from "@/app/api/schedules/route";
+import * as r32 from "@/app/api/automations/[id]/duplicate/route";
+import * as r33 from "@/app/api/automations/[id]/route";
+import * as r34 from "@/app/api/automations/[id]/run/route";
+import * as r35 from "@/app/api/camera-views/[id]/route";
+import * as r36 from "@/app/api/devices/[id]/command/route";
+import * as r37 from "@/app/api/devices/[id]/route";
+import * as r38 from "@/app/api/devices/[id]/simulate/route";
+import * as r39 from "@/app/api/devices/[id]/test/route";
+import * as r40 from "@/app/api/floors/[id]/route";
+import * as r41 from "@/app/api/hotel/rooms/[id]/route";
+import * as r42 from "@/app/api/integrations/[id]/route";
+import * as r43 from "@/app/api/integrations/[id]/test/route";
+import * as r44 from "@/app/api/invitations/[id]/route";
+import * as r45 from "@/app/api/members/[id]/route";
+import * as r46 from "@/app/api/notifications/[id]/route";
+import * as r47 from "@/app/api/properties/[id]/route";
+import * as r48 from "@/app/api/rooms/[id]/route";
+import * as r49 from "@/app/api/scenes/[id]/activate/route";
+import * as r50 from "@/app/api/scenes/[id]/route";
 
 export const ROUTES: [string, Record<string, unknown>][] = [
   ["/api/activity", r0],
@@ -58,45 +60,47 @@ export const ROUTES: [string, Record<string, unknown>][] = [
   ["/api/auth/switch-org", r5],
   ["/api/automations", r6],
   ["/api/bootstrap", r7],
-  ["/api/demo/reset", r8],
-  ["/api/devices/bulk", r9],
-  ["/api/energy", r10],
-  ["/api/executions", r11],
-  ["/api/floors/reorder", r12],
-  ["/api/floors", r13],
-  ["/api/health", r14],
-  ["/api/integrations", r15],
-  ["/api/invitations", r16],
-  ["/api/me/password", r17],
-  ["/api/me", r18],
-  ["/api/members", r19],
-  ["/api/notifications", r20],
-  ["/api/onboarding", r21],
-  ["/api/org", r22],
-  ["/api/pairing/discover", r23],
-  ["/api/pairing/pair", r24],
-  ["/api/properties", r25],
-  ["/api/properties/select", r26],
-  ["/api/rooms/reorder", r27],
-  ["/api/rooms", r28],
-  ["/api/scenes", r29],
-  ["/api/schedules", r30],
-  ["/api/automations/[id]/duplicate", r31],
-  ["/api/automations/[id]", r32],
-  ["/api/automations/[id]/run", r33],
-  ["/api/devices/[id]/command", r34],
-  ["/api/devices/[id]", r35],
-  ["/api/devices/[id]/simulate", r36],
-  ["/api/devices/[id]/test", r37],
-  ["/api/floors/[id]", r38],
-  ["/api/hotel/rooms/[id]", r39],
-  ["/api/integrations/[id]", r40],
-  ["/api/integrations/[id]/test", r41],
-  ["/api/invitations/[id]", r42],
-  ["/api/members/[id]", r43],
-  ["/api/notifications/[id]", r44],
-  ["/api/properties/[id]", r45],
-  ["/api/rooms/[id]", r46],
-  ["/api/scenes/[id]/activate", r47],
-  ["/api/scenes/[id]", r48],
+  ["/api/camera-views", r8],
+  ["/api/demo/reset", r9],
+  ["/api/devices/bulk", r10],
+  ["/api/energy", r11],
+  ["/api/executions", r12],
+  ["/api/floors/reorder", r13],
+  ["/api/floors", r14],
+  ["/api/health", r15],
+  ["/api/integrations", r16],
+  ["/api/invitations", r17],
+  ["/api/me/password", r18],
+  ["/api/me", r19],
+  ["/api/members", r20],
+  ["/api/notifications", r21],
+  ["/api/onboarding", r22],
+  ["/api/org", r23],
+  ["/api/pairing/discover", r24],
+  ["/api/pairing/pair", r25],
+  ["/api/properties", r26],
+  ["/api/properties/select", r27],
+  ["/api/rooms/reorder", r28],
+  ["/api/rooms", r29],
+  ["/api/scenes", r30],
+  ["/api/schedules", r31],
+  ["/api/automations/[id]/duplicate", r32],
+  ["/api/automations/[id]", r33],
+  ["/api/automations/[id]/run", r34],
+  ["/api/camera-views/[id]", r35],
+  ["/api/devices/[id]/command", r36],
+  ["/api/devices/[id]", r37],
+  ["/api/devices/[id]/simulate", r38],
+  ["/api/devices/[id]/test", r39],
+  ["/api/floors/[id]", r40],
+  ["/api/hotel/rooms/[id]", r41],
+  ["/api/integrations/[id]", r42],
+  ["/api/integrations/[id]/test", r43],
+  ["/api/invitations/[id]", r44],
+  ["/api/members/[id]", r45],
+  ["/api/notifications/[id]", r46],
+  ["/api/properties/[id]", r47],
+  ["/api/rooms/[id]", r48],
+  ["/api/scenes/[id]/activate", r49],
+  ["/api/scenes/[id]", r50],
 ];

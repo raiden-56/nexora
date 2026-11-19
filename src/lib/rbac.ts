@@ -11,6 +11,7 @@ export const ALL_PERMISSIONS: { key: Permission; label: string; description: str
   { key: "integrations.manage", label: "Manage integrations", description: "Connect hubs, clouds and pair devices" },
   { key: "billing.manage", label: "Manage billing", description: "Plans, invoices and payment" },
   { key: "hotel.operate", label: "Hotel operations", description: "Check guests in/out, housekeeping" },
+  { key: "cameras.view", label: "View CCTV", description: "Watch camera feeds and manage camera views" },
 ];
 
 export const ROLES: Record<RoleKey, { label: string; description: string; permissions: Permission[] }> = {
@@ -32,31 +33,32 @@ export const ROLES: Record<RoleKey, { label: string; description: string; permis
       "analytics.view",
       "integrations.manage",
       "hotel.operate",
+      "cameras.view",
     ],
   },
   facility_manager: {
     label: "Facility Manager",
     description: "Operates building systems and schedules",
-    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view", "integrations.manage"],
+    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view", "integrations.manage", "cameras.view"],
   },
   hotel_manager: {
     label: "Hotel Manager",
     description: "Front-desk, housekeeping and guest-room automation",
-    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view", "hotel.operate", "users.invite"],
+    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view", "hotel.operate", "users.invite", "cameras.view"],
   },
   staff: {
     label: "Staff",
     description: "Day-to-day device control in assigned areas",
-    permissions: ["devices.view", "devices.control", "hotel.operate"],
+    permissions: ["devices.view", "devices.control", "hotel.operate", "cameras.view"],
   },
   resident: {
     label: "Resident",
     description: "Controls their home, scenes and routines",
-    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view"],
+    permissions: ["devices.view", "devices.control", "automations.manage", "scenes.manage", "analytics.view", "cameras.view"],
   },
   guest: {
     label: "Guest",
-    description: "View and control devices only",
+    description: "View and control devices only (no CCTV)",
     permissions: ["devices.view", "devices.control"],
   },
 };

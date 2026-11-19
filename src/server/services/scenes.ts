@@ -5,7 +5,7 @@ import { ApiError, rateLimit, type Ctx } from "../auth";
 import { db, persist } from "../db";
 import { runScene } from "../automation/executor";
 import { id, nowIso } from "../util";
-import { commandSchema, validateCommand } from "./devices";
+import { commandSchema, disablesSecurity, validateCommand } from "./devices";
 
 export const sceneSchema = z.object({
   name: z.string().trim().min(2).max(60),
@@ -23,6 +23,7 @@ function assertActions(ctx: Ctx, input: z.infer<typeof sceneSchema>) {
     const dev = d.devices.find((x) => x.id === a.deviceId && x.orgId === ctx.orgId && x.propertyId === input.propertyId);
     if (!dev) throw new ApiError(422, "A scene action references a device outside this property.");
     validateCommand(dev, a.command);
+    if (disablesSecurity(dev, a.command)) throw new ApiError(422, `Scenes can't stop recording or turn on privacy mode for ${dev.name} — only a person can pause a camera.`);
   }
 }
 

@@ -139,7 +139,8 @@ export async function pair(ctx: Ctx, input: z.infer<typeof pairSchema>) {
     capabilities: [...cat.capabilities],
     state: { ...cat.defaults },
     online: true,
-    essential: input.essential,
+    // Cameras are security systems: always protected from bulk and automatic switch-off.
+    essential: input.essential || input.device.type === "camera",
     ratedWatts: input.device.ratedWatts,
     lastSeenAt: nowIso(),
     firmware: input.device.firmware,

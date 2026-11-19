@@ -2,10 +2,12 @@ import "@/server/guard";
 import fs from "@/server/node-fs";
 import path from "@/server/node-path";
 import { createSeed } from "./seed";
+import { addDemoCameras } from "./seedCameras";
 import type {
   ActivityLog,
   Automation,
   Building,
+  CameraView,
   Device,
   DeviceState,
   Execution,
@@ -71,13 +73,25 @@ export interface Database {
   notifications: Notification[];
   activity: ActivityLog[];
   integrations: IntegrationAccount[];
+  cameraViews: CameraView[];
   meta: { schedulerLastTick: string | null; seededAt: string };
 }
 
 // process.cwd() is missing in the static demo build, where fs is backed by localStorage.
 const DATA_DIR = path.join(typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : "/", ".data");
 const DATA_FILE = path.join(DATA_DIR, "nexora.json");
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
+
+/** Upgrades older data files in place so existing demo data survives new features. */
+function migrate(data: Database): Database | null {
+  if (data.version === 1) {
+    // v2: CCTV — cameras on the demo properties and saved camera views.
+    data.cameraViews = [];
+    addDemoCameras(data);
+    data.version = 2;
+  }
+  return data.version === SCHEMA_VERSION ? data : null;
+}
 
 type G = typeof globalThis & { __nexoraDb?: Database; __nexoraSaveTimer?: NodeJS.Timeout | null };
 const g = globalThis as G;
@@ -88,7 +102,11 @@ function load(): Database {
   try {
     if (fs.existsSync(DATA_FILE)) {
       const parsed = JSON.parse(fs.readFileSync(DATA_FILE, "utf8")) as Database;
-      if (parsed.version === SCHEMA_VERSION) db = parsed;
+      db = migrate(parsed);
+      if (db) {
+        g.__nexoraDb = db;
+        flush();
+      }
     }
   } catch (err) {
     console.error("[nexora:db] failed to read data file, reseeding", err);

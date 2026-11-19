@@ -6,7 +6,7 @@ import { db, persist } from "../db";
 import { id, nowIso } from "../util";
 import { runAutomation } from "../automation/executor";
 import { upcomingOccurrences } from "../automation/time";
-import { commandSchema } from "./devices";
+import { commandSchema, disablesSecurity } from "./devices";
 
 const days = z.array(z.number().int().min(0).max(6)).max(7);
 const hhmm = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "use HH:MM");
@@ -66,6 +66,8 @@ function assertReferences(ctx: Ctx, input: AutomationInput) {
   for (const a of input.actions) {
     if (a.type === "device") {
       if (!devOk(a.deviceId)) throw new ApiError(422, "An action references a device outside this property.");
+      const dev = d.devices.find((x) => x.id === a.deviceId)!;
+      if (disablesSecurity(dev, a.command)) throw new ApiError(422, `Automations can't stop recording or turn on privacy mode for ${dev.name} — only a person can pause a camera.`);
       a.conditions?.forEach(check);
     }
     if (a.type === "scene" && !d.scenes.some((s) => s.id === a.sceneId && s.orgId === ctx.orgId)) throw new ApiError(422, "An action references an unknown scene.");

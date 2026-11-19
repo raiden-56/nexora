@@ -19,6 +19,7 @@ export const DEVICE_CATALOG: Record<
   motion_sensor: { label: "Motion sensor", group: "Sensors", capabilities: ["motion"], watts: 0.5, defaults: { motion: false } },
   door_sensor: { label: "Door sensor", group: "Sensors", capabilities: ["contact"], watts: 0.3, defaults: { contact: "closed" } },
   temp_sensor: { label: "Climate sensor", group: "Sensors", capabilities: ["temperature"], watts: 0.3, defaults: { temperature: 25 } },
+  camera: { label: "CCTV camera", group: "Security", capabilities: ["camera", "recording", "privacy", "motion"], watts: 6, defaults: { recording: true, privacy: false, motion: false } },
   appliance: { label: "Smart appliance", group: "Appliances", capabilities: ["onoff", "power_meter"], watts: 900, defaults: { on: false } },
 };
 
@@ -33,6 +34,7 @@ export function isActive(d: Device): boolean {
   if (!d.online) return false;
   if (has(d, "onoff")) return !!d.state.on;
   if (has(d, "position")) return (d.state.position ?? 0) > 0;
+  if (has(d, "camera")) return !!d.state.recording && !d.state.privacy;
   if (has(d, "lock")) return d.state.locked === false;
   if (has(d, "motion")) return !!d.state.motion;
   if (has(d, "contact")) return d.state.contact === "open";
@@ -93,6 +95,8 @@ export function describeState(d: Device): string {
       return s.contact === "open" ? "Open" : "Closed";
     case "temp_sensor":
       return `${s.temperature ?? "–"}°C`;
+    case "camera":
+      return s.privacy ? "Privacy mode" : s.motion ? "Motion detected" : s.recording ? "Recording" : "Live · not recording";
     default:
       return s.on ? "On" : "Off";
   }
@@ -113,6 +117,8 @@ export function describeCommand(cmd: DeviceCommand): string {
   if (cmd.position !== undefined) parts.push(cmd.position === 100 ? "Open" : cmd.position === 0 ? "Close" : `position ${cmd.position}%`);
   if (cmd.stop) parts.push("Stop");
   if (cmd.locked !== undefined) parts.push(cmd.locked ? "Lock" : "Unlock");
+  if (cmd.recording !== undefined) parts.push(cmd.recording ? "Start recording" : "Stop recording");
+  if (cmd.privacy !== undefined) parts.push(cmd.privacy ? "Privacy mode on" : "Privacy mode off");
   const s = parts.join(", ");
   return s.charAt(0).toUpperCase() + s.slice(1);
 }

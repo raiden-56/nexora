@@ -81,6 +81,16 @@ async function onDeviceChanged(deviceId: string, previous: Record<string, unknow
 function simulateTelemetry(d: ReturnType<typeof db>) {
   for (const dev of d.devices) {
     if (dev.provider !== "simulated" || !dev.online) continue;
+    if (dev.type === "camera") {
+      // Simulated cameras occasionally see someone walk past; motion clears on the next tick.
+      const prev = { ...dev.state };
+      dev.state.motion = !dev.state.privacy && !prev.motion && Math.random() < 0.06;
+      if (dev.state.motion !== prev.motion) {
+        dev.lastSeenAt = new Date().toISOString();
+        bus.emit({ type: "device.changed", device: dev, previous: prev, source: "system" });
+      }
+      continue;
+    }
     if (!has(dev, "temperature")) continue;
     const prev = { ...dev.state };
     const t = dev.state.temperature ?? 25;

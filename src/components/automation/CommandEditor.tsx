@@ -101,6 +101,25 @@ export function CommandEditor({ device, value, onChange }: { device: Device | un
           </Select>
         </label>
       )}
+      {/* Cameras: routines may start recording but never stop it — only a person can. */}
+      {has(device, "recording") && (
+        <label className={cell}>
+          <span className={lbl}>Recording</span>
+          <Select className="h-9" value={value.recording ? "on" : ""} onChange={(e) => set("recording", e.target.value === "on" ? true : undefined)}>
+            <option value="">No change</option>
+            <option value="on">Start recording</option>
+          </Select>
+        </label>
+      )}
+      {has(device, "privacy") && (
+        <label className={cell}>
+          <span className={lbl}>Privacy mode</span>
+          <Select className="h-9" value={value.privacy === false ? "off" : ""} onChange={(e) => set("privacy", e.target.value === "off" ? false : undefined)}>
+            <option value="">No change</option>
+            <option value="off">Turn off</option>
+          </Select>
+        </label>
+      )}
     </div>
   );
 }

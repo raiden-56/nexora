@@ -85,7 +85,8 @@ export function bootstrap(ctx: Ctx) {
     buildings: d.buildings.filter(inProp),
     floors: d.floors.filter(inProp).sort((a, b) => a.order - b.order),
     rooms: d.rooms.filter(inProp).sort((a, b) => a.order - b.order),
-    devices: d.devices.filter(inProp),
+    // CCTV cameras are only visible to roles allowed to watch them.
+    devices: d.devices.filter((x) => inProp(x) && (x.type !== "camera" || ctx.can("cameras.view"))),
     scenes: d.scenes.filter(inProp),
     unread: d.notifications.filter((n) => n.orgId === ctx.orgId && !n.read && (!n.propertyId || ctx.canAccessProperty(n.propertyId))).length,
     integrations: listIntegrations(ctx),

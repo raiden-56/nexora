@@ -22,7 +22,8 @@ export type Permission =
   | "analytics.view"
   | "integrations.manage"
   | "billing.manage"
-  | "hotel.operate";
+  | "hotel.operate"
+  | "cameras.view";
 
 export type ProviderKey = "simulated" | "home_assistant" | "tuya" | "matter" | "mqtt" | "zigbee";
 
@@ -42,7 +43,8 @@ export type DeviceType =
   | "motion_sensor"
   | "door_sensor"
   | "temp_sensor"
-  | "appliance";
+  | "appliance"
+  | "camera";
 
 export type Capability =
   | "onoff"
@@ -60,7 +62,10 @@ export type Capability =
   | "power_meter"
   | "motion"
   | "contact"
-  | "temperature";
+  | "temperature"
+  | "camera"
+  | "recording"
+  | "privacy";
 
 export type HvacMode = "cool" | "heat" | "dry" | "fan" | "auto";
 
@@ -81,6 +86,8 @@ export interface DeviceState {
   motion?: boolean;
   contact?: "open" | "closed";
   temperature?: number; // measured °C
+  recording?: boolean; // camera is recording to storage
+  privacy?: boolean; // camera lens/stream paused for privacy
 }
 
 export type DeviceCommand = Partial<Omit<DeviceState, "motion" | "contact" | "temperature" | "moving">> & {
@@ -369,4 +376,21 @@ export interface SessionInfo {
   activeOrgId: string | null;
   role: RoleKey | null;
   permissions: Permission[];
+}
+
+// ─── CCTV ────────────────────────────────────────────────────
+
+export type CameraLayout = 1 | 4 | 9 | 16;
+
+/** A saved, switchable CCTV wall: which cameras to show and in what grid. Shared per property. */
+export interface CameraView {
+  id: string;
+  orgId: string;
+  propertyId: string;
+  name: string;
+  layout: CameraLayout;
+  /** camera device ids in slot order */
+  cameraIds: string[];
+  createdBy: string;
+  createdAt: string;
 }
