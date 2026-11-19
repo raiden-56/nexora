@@ -1,0 +1,7 @@
+:HL["/nexora/_next/static/chunks/17ewple4n9o3j.css","style"]
+:HL["/nexora/_next/static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/nexora/_next/static/media/82450a180bcad83c-s.p.0p-wng2nn8o-p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":"properties","h":96,"c":"$Q3"}]]
+1:[["children",{"s":"(app)","h":96,"c":"$Q2"}]]
+0:{"b":"vXoi0B2uDuu2PHNpp9SE6","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
